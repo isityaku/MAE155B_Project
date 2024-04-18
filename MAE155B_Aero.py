@@ -30,9 +30,15 @@ R = 287 # gas constant
 mu = 1.8*10**-5 # dynamic viscosity
 rho = P/(R*temp) # atmospheric density [in kg/m^3]
 a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
+L = 0.75 # estimated aircraft planform length (refer to MAE155B_Sizing_Scoring.py) [in m]
+
+## Cruise Conditions
+V_cruise = 18 # assumed cruise velocity [in m/s]
+M = V_cruise/a # cruise mach number
+Re = rho*V_cruise*L/mu # Reynold's number at cruise velocity
 
 ## Airfoil Configuration
-airfoil = "NACA XXXXX" # airfoil used for aircaft wing
+airfoil = "Clark Y" # airfoil used for aircaft wing
 Cl_a = [] # aircraft 2-D lift curve slope
 a0 = [] # angle-of-attack where Cl = 0
 Cl_max = [] # maximum 2-D lift coefficient
@@ -52,10 +58,6 @@ Lambda_quart = [] # sweep angle at quarter-chord
 Lambda_max = [] # max sweep angle
 
 ## Aerodynamic Parameters
-# Cruise Conditions
-V_cruise = 18 # assumed cruise velocity [in m/s]
-M = V_cruise/a # cruise mach number
-
 # 3-D Lift
 beta = math.sqrt(1-(M**2))
 F = 1.07*(1+(d/b))**2

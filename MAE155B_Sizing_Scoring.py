@@ -110,30 +110,39 @@ W0_T = T*(1/T_W_new) # gross weight based on max thrust from motor-prop config. 
 W0_temp = np.where(W0_frac < W0_T)[0] # finds array positions for gross weight values from weight fraction less than gross weight based on T/W
 W0 = W0_frac[np.max(W0_temp)] # gross weight [in N]
 Wp = W0*Wp_W0 # payload weight [in N]
+We = W0-Wp # empty weight [in N]
 p = Wp/p_weight # units of payload [in syringes]
 S = W0*(1/W_S_new) # wing area [in m^2]
 b = math.sqrt(AR*S) # wing span [in m]
 c = S/b # wing chord [in m]
+L = b*L_b # estimated aircraft planform length
 D = math.sqrt(AR*W0/W_S_new)*(1+L_b) # sum of aircraft planform dimensions [in m]
+Re = rho*V_cruise*L/mu # Reynold's Nummber at cruise velocity
 FS = 20*Wp + Wp_W0 - D**4 + 20*B # flight score function
 
 os.system('cls') # Clearing terminal
 
 ## Tabulating Scoring Parameters
-print("Below are the parameters gained from the sizing plot:")
+print("Below are the parameters used and gained from the sizing plot:")
 scor_tab = pt.PrettyTable(["Parameter", "Unit", "Value"])
 scor_tab.add_row(["Motor", "---", motor])
 scor_tab.add_row(["Propeller", "---", prop])
 scor_tab.add_row(["Wing Loading", "N/m^2", W_S_new])
 scor_tab.add_row(["Thrust-to-Weight Ratio", "---", T_W_new])
 scor_tab.add_row(["Payload-Weight Fraction", "---", Wp_W0])
+scor_tab.add_row(["Density", "kg/m^3", rho])
+scor_tab.add_row(["Cruise Velocity", "m/s", V_cruise])
+scor_tab.add_row(["Dynamic Viscosity", "Ns/m^2", mu])
 scor_tab.add_row(["Aspect Ratio", "---", AR])
 scor_tab.add_row(["Gross Weight", "N", W0])
 scor_tab.add_row(["Payload Weight", "N", Wp])
+scor_tab.add_row(["Empty Weight", "N", We])
 scor_tab.add_row(["Payload Units", "syringes", p])
 scor_tab.add_row(["Wing Area", "m^2", S])
 scor_tab.add_row(["Wing Span", "m", b])
 scor_tab.add_row(["Wing Chord", "m", c])
+scor_tab.add_row(["Estimated Aircraft Length", "m", L])
+scor_tab.add_row(["Reynold's Number (at cruise)", "---", Re])
 scor_tab.add_row(["Flight Score", "---", FS])
 
 print(scor_tab)
