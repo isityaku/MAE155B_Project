@@ -39,21 +39,26 @@ a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
 ## Propulsion Configuration (refer to MAE155B_Sizing_Scoring.py)
 # Motor/Prop Configuration
 motor = "Cobra C-2217/16 Brushless Motor"
-prop = "APC 11x4.7-SF"
+prop = "APC 10x7-E"
+
 # Configuration Parameters
-T = 0.879*9.81 # motor/prop configuration max thrust [in N]
+T = 0.687*9.81 # motor/prop configuration max thrust [in N]
 Q = [] # motor/prop configuration torque
 Power = [] # motor/prop configuration power
 B = 2 # number of blades on propeller
 D = 0.2794 # outside diameter (from APC website) [in m]
 S = math.pi*(D/2)**2 # disk area [in m^2]
 T_S = T/S # disk loading [in N/m^2]
+pitch = 0.1778 # propeller pitch [in m]
+beta = math.atan2(pitch/(2*math.pi*(D/2)))
 
 ## Propulsion Parameters
 # At cruise conditions
 V_inf = 18 # assumed cruise/freestream velocity [in m/s]
+alpha = 0 # angle-of-attack (theoretically zero for cruise)
+phi = beta-alpha
 w_cruise = V_inf/((D/2)*math.tan(math.radians(phi))) # angular speed at cruise [rad/s]
-n_cruise = [] # rotational speed at cruise [rev/s]
+n_cruise = w_cruise*0.159 # rotational speed at cruise [rev/s]
 J_cruise = V_inf/(n_cruise*D) # advance ratio at cruise
 nu_cruise = T*V_inf/(Q*w_cruise) # efficiency at cruise
 CT_cruise = T/(rho*(n_cruise**2)*(D**4)) # thrust coefficient at cruise
@@ -61,9 +66,9 @@ CQ_cruise = Q/(rho*(n_cruise**2)*(D**5)) # torque coefficient at cruise
 CP_cruise = Power/(rho*(n_cruise**3)*(D**5)) # power coefficient at cruise
 
 # At variable freestream velocity
-V = [] # variable freestream velocity
+V = np.linspace(0,500,500) # variable freestream velocity
 w = V/((D/2)*math.tan(math.radians(phi))) # angular speed [rad/s]
-n = [] # rotational speed
+n = w*0.159 # rotational speed
 J = V_inf/(n*D) # advance ratio
 nu = T*V_inf/(Q*w) # efficiency
 CT = T/(rho*(n**2)*(D**4)) # thrust coefficient

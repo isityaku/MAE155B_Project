@@ -41,8 +41,8 @@ Cd_max = [] # maximum 2-D drag coefficient
 Cd_min = [] # minimum 2-D drag coefficient
 
 ## Aircraft Configuration (refer to MAE155B_Sizing_Scoring.py)
-b = [] # wing span [in m]
-c = [] # wing chord [in m]
+b = 1.099 # wing span [in m]
+c = 0.182 # wing chord [in m]
 S = b*c # wing area [in m^2]
 AR = b/c # aspect ratio
 d = [] # fuselage diameter

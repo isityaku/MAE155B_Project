@@ -29,9 +29,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-## Clearing terminal
-os.system('cls')
+import prettytable as pt
 
 ## Defining Parameters
 # Atmospheric Parameters
@@ -46,12 +44,12 @@ a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
 
 # Propulsion Parameters
 motor = "Cobra C-2217/16 Brushless Motor"
-prop = "APC 11x4.7-SF"
-T = 0.879*9.81 # motor/prop configuration max thrust [in N]
+prop = "APC 10x7-E"
+T = 0.687*9.81 # motor/prop configuration max thrust [in N]
 
 # Sizing Parameters
-W_S = 9.76*9.81 # assumed wing loading [in N/m^2]
-T_W = 0.8 # assumed thrust-to-weight ratio
+W_S = 9*9.81 # assumed wing loading [in N/m^2]
+T_W = 0.4 # assumed thrust-to-weight ratio
 AR = 6 # assumed aspect ratio
 B = 1 # empty weight bonus
 p_weight = 0.037*9.81 # individual payload weight [in N/syringe]
@@ -105,8 +103,8 @@ plt.legend() # displays the legend
 plt.show() # produces figure
 
 ## Flight Score Calculation
-W_S_new = 82.4756 # wing loading from sizing plot
-T_W_new = 0.405472 # thrust-to-weight ratio from sizing plot
+W_S_new = 82.5 # wing loading from sizing plot
+T_W_new = 0.40561 # thrust-to-weight ratio from sizing plot
 W0_frac = Wp*(1/Wp_W0) # gross weight based on payload-gross weight fraction [in N]
 W0_T = T*(1/T_W_new) # gross weight based on max thrust from motor-prop config. [in N]
 W0_temp = np.where(W0_frac < W0_T)[0] # finds array positions for gross weight values from weight fraction less than gross weight based on T/W
@@ -118,3 +116,24 @@ b = math.sqrt(AR*S) # wing span [in m]
 c = S/b # wing chord [in m]
 D = math.sqrt(AR*W0/W_S_new)*(1+L_b) # sum of aircraft planform dimensions [in m]
 FS = 20*Wp + Wp_W0 - D**4 + 20*B # flight score function
+
+os.system('cls') # Clearing terminal
+
+## Tabulating Scoring Parameters
+print("Below are the parameters gained from the sizing plot:")
+scor_tab = pt.PrettyTable(["Parameter", "Unit", "Value"])
+scor_tab.add_row(["Motor", "---", motor])
+scor_tab.add_row(["Propeller", "---", prop])
+scor_tab.add_row(["Wing Loading", "N/m^2", W_S_new])
+scor_tab.add_row(["Thrust-to-Weight Ratio", "---", T_W_new])
+scor_tab.add_row(["Payload-Weight Fraction", "---", Wp_W0])
+scor_tab.add_row(["Aspect Ratio", "---", AR])
+scor_tab.add_row(["Gross Weight", "N", W0])
+scor_tab.add_row(["Payload Weight", "N", Wp])
+scor_tab.add_row(["Payload Units", "syringes", p])
+scor_tab.add_row(["Wing Area", "m^2", S])
+scor_tab.add_row(["Wing Span", "m", b])
+scor_tab.add_row(["Wing Chord", "m", c])
+scor_tab.add_row(["Flight Score", "---", FS])
+
+print(scor_tab)
