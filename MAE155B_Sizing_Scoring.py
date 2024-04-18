@@ -36,11 +36,13 @@ os.system('cls')
 ## Defining Parameters
 # Atmospheric Parameters
 g = 9.81 # gravitational acceleration [in m/s^2]
+gamma = 1.4 # specific heat ratio
 P = 101280 # atmospheric pressure [in Pa]
 temp = 286; # atmospheric temperature [in K]
 R = 287 # gas constant
 mu = 1.8*10**-5 # dynamic viscosity
 rho = P/(R*temp) # atmospheric density [in kg/m^3]
+a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
 
 # Propulsion Parameters
 motor = "Cobra C-2217/16 Brushless Motor"
@@ -75,7 +77,7 @@ G = math.sin(math.radians(gamma)) # climb gradient
 q_climb = 0.5*rho*V_climb**2 # climb dynamic pressure
 
 # Cruise
-V_cruise = 18 # assumed cruise velocity
+V_cruise = 18 # assumed cruise velocity [in m/s]
 q_cruise = 0.5*rho*V_cruise**2 # cruise dynamic pressure
 
 # Ceiling

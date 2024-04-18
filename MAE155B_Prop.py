@@ -15,3 +15,57 @@
 #   Thrust Coefficient
 #   Torque Coefficient
 #   Power Coefficient
+
+## Importing Libraries
+import os
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+## Clearing terminal
+os.system('cls')
+
+## Atmospheric Parameters
+g = 9.81 # gravitational acceleration [in m/s^2]
+gamma = 1.4 # specific heat ratio
+P = 101280 # atmospheric pressure [in Pa]
+temp = 286; # atmospheric temperature [in K]
+R = 287 # gas constant
+mu = 1.8*10**-5 # dynamic viscosity
+rho = P/(R*temp) # atmospheric density [in kg/m^3]
+a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
+
+## Propulsion Configuration (refer to MAE155B_Sizing_Scoring.py)
+# Motor/Prop Configuration
+motor = "Cobra C-2217/16 Brushless Motor"
+prop = "APC 11x4.7-SF"
+# Configuration Parameters
+T = 0.879*9.81 # motor/prop configuration max thrust [in N]
+Q = [] # motor/prop configuration torque
+Power = [] # motor/prop configuration power
+B = 2 # number of blades on propeller
+D = 0.2794 # outside diameter (from APC website) [in m]
+S = math.pi*(D/2)**2 # disk area [in m^2]
+T_S = T/S # disk loading [in N/m^2]
+
+## Propulsion Parameters
+# At cruise conditions
+V_inf = 18 # assumed cruise/freestream velocity [in m/s]
+w_cruise = V_inf/((D/2)*math.tan(math.radians(phi))) # angular speed at cruise [rad/s]
+n_cruise = [] # rotational speed at cruise [rev/s]
+J_cruise = V_inf/(n_cruise*D) # advance ratio at cruise
+nu_cruise = T*V_inf/(Q*w_cruise) # efficiency at cruise
+CT_cruise = T/(rho*(n_cruise**2)*(D**4)) # thrust coefficient at cruise
+CQ_cruise = Q/(rho*(n_cruise**2)*(D**5)) # torque coefficient at cruise
+CP_cruise = Power/(rho*(n_cruise**3)*(D**5)) # power coefficient at cruise
+
+# At variable freestream velocity
+V = [] # variable freestream velocity
+w = V/((D/2)*math.tan(math.radians(phi))) # angular speed [rad/s]
+n = [] # rotational speed
+J = V_inf/(n*D) # advance ratio
+nu = T*V_inf/(Q*w) # efficiency
+CT = T/(rho*(n**2)*(D**4)) # thrust coefficient
+CQ = Q/(rho*(n**2)*(D**5)) # torque coefficient
+CP = Power/(rho*(n**3)*(D**5)) # power coefficient
