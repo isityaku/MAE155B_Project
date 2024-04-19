@@ -22,6 +22,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import prettytable as pt
 
 ## Atmospheric Parameters
 g = 9.81 # gravitational acceleration [in m/s^2]
@@ -39,35 +40,81 @@ motor = "Cobra C-2217/16 Brushless Motor"
 prop = "APC 10x7-E"
 
 # Configuration Parameters
-T = 0.687*9.81 # motor/prop configuration max thrust [in N]
-Q = [] # motor/prop configuration torque
-Power = [] # motor/prop configuration power
 B = 2 # number of blades on propeller
-D = 0.2794 # outside diameter (from APC website) [in m]
+D = 0.254 # outside diameter (from APC website) [in m]
 S = math.pi*(D/2)**2 # disk area [in m^2]
-T_S = T/S # disk loading [in N/m^2]
-pitch = 0.1778 # propeller pitch [in m]
-beta = math.atan2(pitch/(2*math.pi*(D/2)))
 
 ## Propulsion Parameters
-# At cruise conditions
+# Cruise Conditions (from APC 10x7-E Simulation Document)
 V_inf = 18 # assumed cruise/freestream velocity [in m/s]
-alpha = 0 # angle-of-attack (theoretically zero for cruise)
-phi = beta-alpha
-w_cruise = V_inf/((D/2)*math.tan(math.radians(phi))) # angular speed at cruise [rad/s]
-n_cruise = w_cruise*0.159 # rotational speed at cruise [rev/s]
-J_cruise = V_inf/(n_cruise*D) # advance ratio at cruise
-nu_cruise = T*V_inf/(Q*w_cruise) # efficiency at cruise
-CT_cruise = T/(rho*(n_cruise**2)*(D**4)) # thrust coefficient at cruise
-CQ_cruise = Q/(rho*(n_cruise**2)*(D**5)) # torque coefficient at cruise
-CP_cruise = Power/(rho*(n_cruise**3)*(D**5)) # power coefficient at cruise
+n = 6000/60 # rotational speed at cruise conditions [in RPS]
+J_cruise = V_inf/(n*D) # advance ratio at cruise conditions
+T_cruise = 1.519 # thrust at cruise conditions [in N]
+Q_cruise = 0.063 # torque at cruise conditions [in N-m]
+PWR_cruise = 39.734 # power at cruise conditions [in W]
+CT_cruise = T_cruise/(rho*(n**2)*(D**4)) # thrust coefficient at cruise conditions
+CQ_cruise = Q_cruise/(rho*(n**2)*(D**5)) # torque coefficient at cruise conditions
+CP_cruise = PWR_cruise/(rho*(n**3)*(D**5)) # power coefficient at cruise conditions
+eta_cruise = CT_cruise*J_cruise/CP_cruise # efficiency at cruise conditions
+
+os.system('cls') # Clearing terminal
+
+print("Below are the propulsion parameters for the motor/propeller configuration at cruise conditions:")
+prop_tab = pt.PrettyTable(["Parameter", "Unit", "Value"])
+prop_tab.add_row(["Motor", "---", motor])
+prop_tab.add_row(["Propeller", "---", prop])
+prop_tab.add_row(["Number of Blades", "---", B])
+prop_tab.add_row(["Outside Diameter", "m", D])
+prop_tab.add_row(["Freestream Velocity", "m/s", V_inf])
+prop_tab.add_row(["Propeller Rotational Velocity", "RPM", n])
+prop_tab.add_row(["Advance Ratio", "---", J_cruise])
+prop_tab.add_row(["Thrust", "N", T_cruise])
+prop_tab.add_row(["Torque", "N-m", Q_cruise])
+prop_tab.add_row(["Power", "W", PWR_cruise])
+prop_tab.add_row(["Thrust Coefficient", "---", CT_cruise])
+prop_tab.add_row(["Torque Coefficient", "---", CQ_cruise])
+prop_tab.add_row(["Power Coefficient", "---", CP_cruise])
+prop_tab.add_row(["Efficiency", "---", eta_cruise])
+
+print(prop_tab)
 
 # At variable freestream velocity
-V = np.linspace(0,500,500) # variable freestream velocity
-w = V/((D/2)*math.tan(math.radians(phi))) # angular speed [rad/s]
-n = w*0.159 # rotational speed
-J = V_inf/(n*D) # advance ratio
-CT = T/(rho*(n**2)*(D**4)) # thrust coefficient
-CQ = Q/(rho*(n**2)*(D**5)) # torque coefficient
-CP = Power/(rho*(n**3)*(D**5)) # power coefficient
-nu = CT*J/CP # efficiency
+prop_data = pd.read_csv("MAE155B_Data/prop_data_6000rpm.csv")
+J = prop_data['J']
+CT = prop_data['Thrust.1']/(rho*(n**2)*(D**4)) # thrust coefficient
+CQ = prop_data['Torque.1']/(rho*(n**2)*(D**5)) # torque coefficient
+CP = prop_data['PWR.1']/(rho*(n**3)*(D**5)) # power coefficient
+eta = CT*J/CP # efficiency
+
+## Plotting
+# Thrust Coefficient v. Advance Ratio
+plt.plot(J,CT)
+plt.grid() # adds grid to plot
+plt.xlabel("Advance Ratio (J)") # labels x axis
+plt.ylabel("Thrust Coefficient") # labels y axis
+plt.title("Thrust Coefficient v. Advance Ratio") # titles the plot
+plt.show()
+
+# Torque Coefficient v. Advance Ratio
+plt.plot(J,CQ)
+plt.grid() # adds grid to plot
+plt.xlabel("Advance Ratio (J)") # labels x axis
+plt.ylabel("Torque Coefficient") # labels y axis
+plt.title("Torque Coefficient v. Advance Ratio") # titles the plot
+plt.show()
+
+# Power Coefficient v. Advance Ratio
+plt.plot(J,CP)
+plt.grid() # adds grid to plot
+plt.xlabel("Advance Ratio (J)") # labels x axis
+plt.ylabel("Power Coefficient") # labels y axis
+plt.title("Power Coefficient v. Advance Ratio") # titles the plot
+plt.show()
+
+# Efficiency v. Advance Ratio
+plt.plot(J,eta)
+plt.grid() # adds grid to plot
+plt.xlabel("Advance Ratio (J)") # labels x axis
+plt.ylabel("Efficiency") # labels y axis
+plt.title("Efficiency v. Advance Ratio") # titles the plot
+plt.show()
