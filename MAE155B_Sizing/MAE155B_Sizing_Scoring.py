@@ -31,6 +31,8 @@ import numpy as np
 import pandas as pd
 import prettytable as pt
 
+os.system('cls') # Clearing terminal
+
 ## Defining Parameters
 # Atmospheric Parameters
 g = 9.81 # gravitational acceleration [in m/s^2]
@@ -44,8 +46,8 @@ a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
 
 # Propulsion Parameters
 motor = "Cobra C-2217/16 Brushless Motor"
-prop = "APC 10x7-E"
-T = 0.687*9.81 # motor/prop configuration max thrust [in N]
+prop = "APC 9x6-E"
+T = 1.058*9.81 # motor/prop configuration max thrust [in N]
 
 # Sizing Parameters
 W_S = 9*9.81 # assumed wing loading [in N/m^2]
@@ -104,7 +106,7 @@ plt.show() # produces figure
 
 ## Flight Score Calculation
 W_S_new = 82.5 # wing loading from sizing plot
-T_W_new = 0.40561 # thrust-to-weight ratio from sizing plot
+T_W_new = 0.40549 # thrust-to-weight ratio from sizing plot
 W0_frac = Wp*(1/Wp_W0) # gross weight based on payload-gross weight fraction [in N]
 W0_T = T*(1/T_W_new) # gross weight based on max thrust from motor-prop config. [in N]
 W0_temp = np.where(W0_frac < W0_T)[0] # finds array positions for gross weight values from weight fraction less than gross weight based on T/W
@@ -120,10 +122,8 @@ D = math.sqrt(AR*W0/W_S_new)*(1+L_b) # sum of aircraft planform dimensions [in m
 Re = rho*V_cruise*L/mu # Reynold's Nummber at cruise velocity
 FS = 20*Wp + Wp_W0 - D**4 + 20*B # flight score function
 
-os.system('cls') # Clearing terminal
-
 ## Tabulating Scoring Parameters
-print("Below are the parameters used and gained from the sizing plot:")
+print("Sizing Parameters:")
 scor_tab = pt.PrettyTable(["Parameter", "Unit", "Value"])
 scor_tab.add_row(["Motor", "---", motor])
 scor_tab.add_row(["Propeller", "---", prop])
@@ -132,7 +132,7 @@ scor_tab.add_row(["Thrust-to-Weight Ratio", "---", T_W_new])
 scor_tab.add_row(["Payload-Weight Fraction", "---", Wp_W0])
 scor_tab.add_row(["Density", "kg/m^3", rho])
 scor_tab.add_row(["Cruise Velocity", "m/s", V_cruise])
-scor_tab.add_row(["Dynamic Viscosity", "Ns/m^2", mu])
+scor_tab.add_row(["Dynamic Viscosity", "N-s/m^2", mu])
 scor_tab.add_row(["Aspect Ratio", "---", AR])
 scor_tab.add_row(["Gross Weight", "N", W0])
 scor_tab.add_row(["Payload Weight", "N", Wp])
