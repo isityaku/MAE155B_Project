@@ -1,4 +1,4 @@
-### MAE155B Propulsion [WIP]
+### MAE155B Propulsion
 # Made By: Lance De La Cruz
 
 ## Outline
@@ -40,7 +40,7 @@ a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
 # Motor/Prop Configuration
 motor = "Cobra C-2217/16 Brushless Motor"
 prop = "APC 9x6-E"
-prop_data = pd.read_csv("MAE155B_Data/prop_data_6000rpm.csv")
+prop_data = pd.read_csv("MAE155B_Data/9x6E_data_9000rpm.csv")
 
 # Configuration Parameters
 B = 2 # number of blades on propeller
