@@ -1,4 +1,4 @@
-### MAE155B Aerodynamics [WIP]
+### MAE155B Aerodynamics
 # Made By: Lance De La Cruz
 
 ## Outline
@@ -101,6 +101,7 @@ Cf_fuse = 0.455/((math.log(Re_fuse, 10)**2.58)*(1+(0.144*M**2))**0.65) # turbule
 
 # Landing Gear
 Cd_land = 1.01 # assumed drag coefficient for landing gear
+A_land = 0.199898*0.100076*0.0029972 # assumed frontal area of the landing gear [in m2]
 
 # Motor
 Cd_motor = 0.34 # assumed drag coefficient for motor
@@ -113,7 +114,7 @@ Lambda_max = 0 # max sweep angle
 Lambda_m = 0 # some sort of sweep angle (doesn't rlly matter, only goes to trig functions)
 
 ## 3-D Coefficient Calculation
-alp = np.linspace(-5,20,100)
+alp = np.linspace(-5,20,101)
 
 # 3-D Lift Calculation
 beta = math.sqrt(1-(M**2))
@@ -132,7 +133,7 @@ FF_wing = (1+(0.6*t_c_wing/x_c_wing)+(100*t_c_wing**4))*((1.34*M**0.18)*(math.co
 FF_hs = (1+(0.6*t_c_hs/x_c_hs)+(100*t_c_hs**4))*((1.34*M**0.18)*(math.cos(Lambda_m)**0.28))
 FF_vs = (1+(0.6*t_c_vs/x_c_vs)+(100*t_c_vs**4))*((1.34*M**0.18)*(math.cos(Lambda_m)**0.28))
 FF_fuse = 1+(60/f_fuse**3)+(f_fuse/400)
-CD_min = ((Cf_wing*FF_wing*Q*S_wet_wing)+(Cf_hs*FF_hs*Q*S_wet_hs)+(Cf_vs*FF_vs*Q*S_wet_vs)+(Cf_fuse*FF_fuse*Q*S_wet_fuse))/S_ref_wing
+CD_min = ((Cf_wing*FF_wing*Q*S_wet_wing)+(Cf_hs*FF_hs*Q*S_wet_hs)+(Cf_vs*FF_vs*Q*S_wet_vs)+(Cf_fuse*FF_fuse*Q*S_wet_fuse)+(Cd_motor*A_motor)+(Cd_land*A_land))/S_ref_wing
 CD = CD_min+(K*(CL-CL_min)**2)+(CL**2/(math.pi*e*AR))
 CD_cruise = CD_min+(K*(CL_cruise-CL_min)**2)+(CL_cruise**2/(math.pi*e*AR))
 CD_max = max(CD)
@@ -168,3 +169,40 @@ aero_tab.add_row(["Lift-to-Drag Ratio (min)", "---", CL_min/CD_min])
 
 print(aero_tab)
 
+## Takeoff Analysis
+# Requried Parameters
+W0 = 25.408 # gross weight (refer to MAE155B_Sizing_Scoring.py)
+CD0 = 0.06 # drag coefficient when aoa = 0
+CL0 = 0.26 # lift coefficient when aoa = 0
+Fc = 0.03 # rolling friction coefficient
+T_to = 8.496 # thrust value from propeller data [in N]
+prop_data = pd.read_csv("MAE155B_Data/9x6E_data_9000rpm.csv")
+
+# Takeoff Analysis Calculations
+CL_to = 0.8*CL_max # takeoff lift coefficient
+V_to = math.sqrt((2*W0)/(CL_to*rho*S_ref_wing)) # takeoff velocity [in m/s]
+V_to_70 = 0.7*V_to
+D_to = 0.5*rho*V_to_70**2*CD0*S_ref_wing # drag at cruise [in N]
+L_to = 0.5*rho*V_to_70**2*CL0*S_ref_wing # drag at cruise [in N]
+a_m = (g/W0)*((T_to-D_to)-(Fc*(W0-L_to))) # estimated mean acceleration [in m/s]
+S_G = V_to**2/(2*a_m) # estimated ground roll distance
+
+# Thrust v. Velocity Plot
+V = prop_data["V"]*0.44704 # velocity array from propeller data [in m/s]
+T = prop_data["Thrust.1"] # thrust array from propeller data [in N]
+CL_1 = W0/(S_ref_wing*0.5*rho*V**2)
+CD_1 = CD0 + (CL_1**2/(math.pi*e*AR))
+D = 0.5*rho*V**2*CD_1*S_ref_wing # drag array based on propelelr data [in N]
+plt.plot(V,T, label="Thrust", color="blue")
+plt.plot(V[4::],D[4::], label="Drag", color="red")
+plt.plot([18.597], [4.552], label="Max Speed", marker='o', color="green")
+plt.plot(V[16], T[16], label="Cruise Speed", marker='o', color="purple")
+anno_pt1 = (18.597, 4.552)
+anno_pt2 = (19, 4.4)
+plt.annotate("60% of Max. Thrust", anno_pt1, anno_pt2)
+plt.grid() # adds grid to plot
+plt.xlabel("Aircraft Velocity [in m/s]") # labels x axis
+plt.ylabel("Aerodynamic Forces [in N]") # labels y axis
+plt.title("Aerodynamic Forces v. Aircraft Velocity") # titles the plot
+plt.legend() # displays the legend
+plt.show()
