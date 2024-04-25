@@ -1,28 +1,6 @@
 ### MAE155B Sizing and Scoring Analysis
 # Made By: Lance De La Cruz
 
-## Outline
-# Define the following parameters:
-#   Atmospheric Parameters
-#   Propulsion Parameters
-#   Sizing / Weight Parameters
-#   Aerodynamic Parameters
-# Conduct Preliminary Analysis for the following:
-#   Stall
-#   Climb
-#   Cruise
-#   Maneuver
-#   Takeoff
-#   Landing
-# Create the sizing plot
-# Use sizing plot to determine flight score by obtaining the following:
-#   Wing Loading
-#   Thrust-to-Weight Ratio
-#   Gross and Payload Ratio
-#   Wing Area, Span, and Chord
-#   Planform Dimension Sum
-#   Flight Score
-
 ## Importing Libraries
 import os
 import math
@@ -50,7 +28,7 @@ prop = "APC 9x6-E"
 T = 1.058*9.81 # motor/prop configuration max thrust [in N]
 
 # Sizing Parameters
-W_S = 9*9.81 # assumed wing loading [in N/m^2]
+W_S = 13*9.81 # assumed wing loading [in N/m^2]
 T_W = 0.4 # assumed thrust-to-weight ratio
 AR = 6 # assumed aspect ratio
 B = 1 # empty weight bonus
@@ -60,11 +38,11 @@ Wp_W0 = 0.4 # assuemd payload-gross weight fraction
 L_b = 1/1.5 # length-to-width ratio (length-to-wingspan)
 
 # Aerodynamic Parameters
-CL_max = 1 # assumed max lift coefficient
-CL_cruise = 0.5 # assumed cruise lift coefficient
+CL_max = 1.25 # assumed max lift coefficient
+CL_cruise = 0.4 # assumed cruise lift coefficient
 Cd0 = 0.04 # assumed zero AoA drag coefficient
 e = 1.78*(1-(0.045*AR**0.68))-0.64 # oswald efficiency factor
-n = 3.5 # max load factor (used for maneuver calculation)
+n = 3 # max load factor (used for maneuver calculation)
 
 ## Preliminary Analysis
 # Stall
@@ -77,7 +55,7 @@ G = math.sin(math.radians(gamma)) # climb gradient
 q_climb = 0.5*rho*V_climb**2 # climb dynamic pressure
 
 # Cruise
-V_cruise = 18 # assumed cruise velocity [in m/s]
+V_cruise = 15 # assumed cruise velocity [in m/s]
 q_cruise = 0.5*rho*V_cruise**2 # cruise dynamic pressure
 
 # Ceiling
@@ -95,6 +73,7 @@ plt.plot(W_S_plot, T_W_climb, label="Climb", color="blue") # plots climb equatio
 plt.plot(W_S_plot, T_W_ceil, label="Ceiling", color="red") # plots ceiling equation
 plt.plot(W_S_plot, T_W_man, label="Maneuver", color="green") # plots maneuver equation
 plt.vlines(W_S, 0, 1, label="Stall", color="black") # plots stall wing loading
+plt.plot([88.5], [0.415], label="Optimum Point", marker='o', color="purple")
 plt.xlim(0, 150) # adjusts x axis
 plt.ylim(0, 1) # adjusts y axis
 plt.grid() # adds grid to plot
@@ -105,8 +84,8 @@ plt.legend() # displays the legend
 plt.show() # produces figure
 
 ## Flight Score Calculation
-W_S_new = 82.5 # wing loading from sizing plot
-T_W_new = 0.40549 # thrust-to-weight ratio from sizing plot
+W_S_new = 88.5 # wing loading from sizing plot
+T_W_new = 0.415 # thrust-to-weight ratio from sizing plot
 W0_frac = Wp*(1/Wp_W0) # gross weight based on payload-gross weight fraction [in N]
 W0_T = T*(1/T_W_new) # gross weight based on max thrust from motor-prop config. [in N]
 W0_temp = np.where(W0_frac < W0_T)[0] # finds array positions for gross weight values from weight fraction less than gross weight based on T/W

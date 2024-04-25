@@ -1,21 +1,6 @@
 ### MAE155B Propulsion
 # Made By: Lance De La Cruz
 
-## Outline
-# State and justify motor-prop configuration.
-# Find the following parameters (at cruise):
-#   Efficiency
-#   Thrust
-#   Torque
-#   Power
-#   Advance Ratio
-#   Rotational Speed
-# Plot the following v. advance ratio:
-#   Efficiency
-#   Thrust Coefficient
-#   Torque Coefficient
-#   Power Coefficient
-
 ## Importing Libraries
 import os
 import math
@@ -49,13 +34,13 @@ S = math.pi*(D/2)**2 # disk area [in m^2]
 
 ## Propulsion Parameters
 # Cruise Conditions (from APC 10x7-E Simulation Document)
-V_inf = 18 # assumed cruise/freestream velocity [in m/s]
+V_inf = 15 # assumed cruise/freestream velocity [in m/s]
 n_m = 9000 # rotational speed at cruise conditions [in RPM]
 n_s = n_m/60 # rotational speed at cruise conditions [in RPS]
 J_cruise = V_inf/(n_s*D) # advance ratio at cruise conditions
-T_cruise = 4.655 # thrust at cruise conditions [in N]
-Q_cruise = 0.127 # torque at cruise conditions [in N-m]
-PWR_cruise = 119.834 # power at cruise conditions [in W]
+T_cruise = 6.1185 # interpolated thrust at cruise conditions [in N]
+Q_cruise = 0.1475 # interpolated torque at cruise conditions [in N-m]
+PWR_cruise = 139.2115 # interpolated power at cruise conditions [in W]
 CT_cruise = T_cruise/(rho*(n_s**2)*(D**4)) # thrust coefficient at cruise conditions
 CQ_cruise = Q_cruise/(rho*(n_s**2)*(D**5)) # torque coefficient at cruise conditions
 CP_cruise = PWR_cruise/(rho*(n_s**3)*(D**5)) # power coefficient at cruise conditions
