@@ -25,7 +25,7 @@ a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
 # Motor/Prop Configuration
 motor = "Cobra C-2217/16 Brushless Motor"
 prop = "APC 9x6-E"
-prop_data = pd.read_csv("MAE155B_Data/9x6E_data_9000rpm.csv")
+prop_data = pd.read_csv("MAE155B_Prop/9x6E_data_9000rpm.csv")
 
 # Configuration Parameters
 B = 2 # number of blades on propeller
@@ -34,13 +34,13 @@ S = math.pi*(D/2)**2 # disk area [in m^2]
 
 ## Propulsion Parameters
 # Cruise Conditions (from APC 10x7-E Simulation Document)
-V_inf = 15 # assumed cruise/freestream velocity [in m/s]
+V_inf = 18 # assumed cruise/freestream velocity [in m/s]
 n_m = 9000 # rotational speed at cruise conditions [in RPM]
 n_s = n_m/60 # rotational speed at cruise conditions [in RPS]
 J_cruise = V_inf/(n_s*D) # advance ratio at cruise conditions
-T_cruise = 6.1185 # interpolated thrust at cruise conditions [in N]
-Q_cruise = 0.1475 # interpolated torque at cruise conditions [in N-m]
-PWR_cruise = 139.2115 # interpolated power at cruise conditions [in W]
+T_cruise = 4.825 # interpolated thrust at cruise conditions [in N]
+Q_cruise = 0.130 # interpolated torque at cruise conditions [in N-m]
+PWR_cruise = 122.313 # interpolated power at cruise conditions [in W]
 CT_cruise = T_cruise/(rho*(n_s**2)*(D**4)) # thrust coefficient at cruise conditions
 CQ_cruise = Q_cruise/(rho*(n_s**2)*(D**5)) # torque coefficient at cruise conditions
 CP_cruise = PWR_cruise/(rho*(n_s**3)*(D**5)) # power coefficient at cruise conditions
