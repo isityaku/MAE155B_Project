@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import prettytable as pt
 
-
 os.system('cls') # Clearing terminal
 
 ## Atmospheric Parameters
@@ -24,7 +23,7 @@ a = math.sqrt(gamma*R*temp) # speed of sound [in m/s]
 L = 0.86 # estimated aircraft planform length (refer to MAE155B_Sizing_Scoring.py) [in m]
 
 ## Cruise Conditions
-V_cruise = 15 # assumed cruise velocity [in m/s]
+V_cruise = 18 # assumed cruise velocity [in m/s]
 M = V_cruise/a # cruise mach number
 Re = rho*V_cruise*L/mu # Reynold's number at cruise velocity
 
@@ -45,11 +44,11 @@ foil_tail = "NACA 0015" # airfoil used for aircraft tail
 
 ## Aircraft Configuration (refer to MAE155B_Sizing_Scoring.py)
 # Wing
-b_wing = 1.289 # wing span [in m]
-c_wing = 0.215 # wing chord [in m]
+b_wing = 1.359 # wing span [in m]
+c_wing = 0.227 # wing chord [in m]
 t_c_wing = 0.117 # wing thickness-to-chord ratio
 x_c_wing = 0.28 # location of maximum thickness for wing
-MAC = (2/3)*c_wing # mean aerodynamic chord [in m]
+MAC = c_wing # mean aerodynamic chord [in m]
 S_ref_wing = b_wing*c_wing # wing area [in m^2]
 AR = b_wing/c_wing # aspect ratio
 e = 1.78*(1-(0.045*AR**0.68))-0.64 # oswald efficiency factor
@@ -60,8 +59,8 @@ Re_wing = rho*V_cruise*b_wing/mu
 Cf_wing = 0.455/((math.log(Re_wing, 10)**2.58)*(1+(0.144*M**2))**0.65) # turbulent skin friction coefficient
 
 # Horizontal Stabilizer
-b_hs = 0.5 # assumed horizontal stabilizer span [in m]
-c_hs = 0.125 # assumed horizontal stabilizer chord lenght [in m]
+b_hs = 0.4 # assumed horizontal stabilizer span [in m]
+c_hs = 0.2 # assumed horizontal stabilizer chord lenght [in m]
 S_ref_hs = b_hs*c_hs # horizontal stabilizer area
 t_c_hs = 0.15 # horizontal stabilizer thickness-to-chord ratio
 x_c_hs = 0.28 # location of maximum thickness for horizontal stabilizer
@@ -70,8 +69,8 @@ Re_hs = rho*V_cruise*b_hs/mu
 Cf_hs = 0.455/((math.log(Re_hs, 10)**2.58)*(1+(0.144*M**2))**0.65) # turbulent skin friction coefficient
 
 # Vertical Stabilizer
-b_vs = 0.25 # assumed vertical stabilizer span [in m]
-c_vs = 0.125 # assumed vertical stabilizer chord lenght [in m]
+b_vs = 0.175 # assumed vertical stabilizer span [in m]
+c_vs = 0.175 # assumed vertical stabilizer chord lenght [in m]
 S_ref_vs = b_vs*c_vs # vertical stabilizer area
 t_c_vs = 0.15 # vertical stablizer thickness-to-chord ratio
 x_c_vs = 0.28 # location of maximum thickness for vertical stabilizer
@@ -125,8 +124,7 @@ FF_vs = (1+(0.6*t_c_vs/x_c_vs)+(100*t_c_vs**4))*((1.34*M**0.18)*(math.cos(Lambda
 FF_fuse = 1+(60/f_fuse**3)+(f_fuse/400)
 CD_min = ((2*Cf_wing*FF_wing*Q*S_wet_wing)+(Cf_hs*FF_hs*Q*S_wet_hs)+(Cf_vs*FF_vs*Q*S_wet_vs)+(Cf_fuse*FF_fuse*Q*S_wet_fuse)+(Cd_motor*A_motor)+(Cd_land*A_land))/S_ref_wing
 CD = CD_min+(K*(CL-CL_min)**2)+(1.5*CL**2/(math.pi*e*AR))
-CD_cruise = CD_min+(K*(CL_cruise-CL_min)**2)+(1.5*CL_cruise**2/(math.pi*e*AR))
-CD_max = max(CD)
+CD_cruise = CD_min+(K*(CL_cruise-CL_min)**2)+(1.75*CL_cruise**2/(math.pi*e*AR))
 
 ## Plotting
 # 3-D Lift
@@ -151,21 +149,17 @@ aero_tab.add_row(["Lift Coefficient (cruise)", "---", CL_cruise])
 aero_tab.add_row(["Drag Coefficient (cruise)", "---", CD_cruise])
 aero_tab.add_row(["Lift-to-Drag Ratio (cruise)", "---", CL_cruise/CD_cruise])
 aero_tab.add_row(["Lift Coefficient (max)", "---", CL_max])
-aero_tab.add_row(["Drag Coefficient (max)", "---", CD_max])
-aero_tab.add_row(["Lift-to-Drag Ratio (max)", "---", CL_max/CD_max])
-aero_tab.add_row(["Lift Coefficient (min)", "---", CL_min])
 aero_tab.add_row(["Drag Coefficient (min)", "---", CD_min])
-aero_tab.add_row(["Lift-to-Drag Ratio (min)", "---", CL_min/CD_min])
 
 print(aero_tab)
 
 ## Takeoff Analysis
 # Requried Parameters
-W0 = 24.5 # gross weight (refer to MAE155B_Sizing_Scoring.py)
-CD0 = 0.07 # drag coefficient when aoa = 0
-CL0 = 0.4 # lift coefficient when aoa = 0
+W0 = 25.408 # gross weight (refer to MAE155B_Sizing_Scoring.py)
+CD0 = 0.071129 # drag coefficient when aoa = 0
+CL0 = 0.42737 # lift coefficient when aoa = 0
 Fc = 0.03 # rolling friction coefficient
-T_to = 6.1185 # thrust value from propeller data [in N]
+T_to = 4.825 # thrust value from propeller data [in N]
 prop_data = pd.read_csv("MAE155B_Data/9x6E_data_9000rpm.csv")
 
 # Takeoff Analysis Calculations
@@ -176,7 +170,6 @@ D_to = 0.5*rho*V_to_70**2*CD0*S_ref_wing # drag at cruise [in N]
 L_to = 0.5*rho*V_to_70**2*CL0*S_ref_wing # drag at cruise [in N]
 a_m = (g/W0)*((T_to-D_to)-(Fc*(W0-L_to))) # estimated mean acceleration [in m/s]
 S_G = V_to**2/(2*a_m) # estimated ground roll distance
-print(S_G)
 
 # Thrust v. Velocity Plot
 V = prop_data["V"]*0.44704 # velocity array from propeller data [in m/s]
@@ -186,11 +179,11 @@ CD_1 = CD0 + (CL_1**2/(math.pi*e*AR))
 D = 0.5*rho*V**2*CD_1*S_ref_wing # drag array based on propelelr data [in N]
 plt.plot(V,T, label="Thrust", color="blue")
 plt.plot(V[4::],D[4::], label="Drag", color="red")
-plt.plot([18.30], [4.7], label="Max Speed", marker='o', color="green")
+plt.plot([17.74], [4.92], label="Max Speed", marker='o', color="green")
 plt.plot([15], [6.14], label="Cruise Speed", marker='o', color="purple")
-anno_pt1 = (18.32, 4.66)
-anno_pt2 = (19, 4.56)
-plt.annotate("48% of Max. Thrust", anno_pt1, anno_pt2)
+anno_pt1 = (17.74, 4.92)
+anno_pt2 = (18.5, 4.92)
+plt.annotate("50% of Max. Thrust", anno_pt1, anno_pt2)
 plt.grid() # adds grid to plot
 plt.xlabel("Aircraft Velocity [in m/s]") # labels x axis
 plt.ylabel("Aerodynamic Forces [in N]") # labels y axis
